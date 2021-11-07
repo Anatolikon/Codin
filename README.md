@@ -1,0 +1,256 @@
+# Codin
+Some Coding stuff. 
+int screen;
+int buttonW, buttonH; //Common to all buttons in my game
+int button1X, button1Y;
+int startGameX, startGameY;
+int locX, locY;
+int roadWidth, roadHeight;
+float y;
+float x;
+float sy;
+int score;
+Traffic cars;
+traffix cars2;
+drafic cars3;
+
+player play;
+
+
+void setup() {
+  background(0, 200, 0);
+  size (600, 600);
+  screen = 0;
+  buttonW = 190;
+  buttonH = 50;
+
+  button1X = 200;
+  button1Y = 300;
+  locX = 0;
+  locY = 40;
+  roadWidth = 600;
+  roadHeight = 40;
+  screen = 0;
+  cars = new Traffic(40, 50, 13);
+  cars2 = new traffix (40, 270, 15);
+  cars3 = new drafic (40, 0, 10);
+  play = new player (300, 550, 0);
+}
+
+void draw() {
+
+  if (screen == 0) {//main menu
+    background(0);
+    fill(255, 255, 0);
+    textSize(50);
+    text("Crossy Road", 180, 200);
+    textSize(20);
+    fill(0, 255, 0);
+
+    drawButton(button1X, button1Y, "Play, Pedestrian!");
+    fill(200, 200, 200);
+    //rect(button1X, button1Y - 200, buttonW, buttonH);
+  } else if (screen == 1) {
+    background(0, 255, 0);
+    score = 0;
+    textSize(20);
+    fill(0, 0, 0);
+    stroke(220);
+    fill(255, 255, 0);
+    // text("Score:"+ " " + score, 20, 20);
+    road1();
+    road2();
+    play.display();
+    play.reset();
+    cars.display();
+    cars.drive();
+    cars2.display();
+    cars2.drive();
+    cars3.display();
+    cars3.drive();
+
+    if (play.py > cars.y && play.py < cars.y + 20 && play.px > cars.x && play.px < cars.x + 70) {
+      screen = 3;
+    }
+  } else if (screen == 3) {
+
+    text("Game Over", 30, 30);
+  }
+}
+
+void drawButton(int x, int y, String s) {
+
+  if (mouseX > x && mouseX < x + buttonW && mouseY > y && mouseY < y + buttonH) {
+    fill(150);
+  } else fill(255);
+
+  rect(x, y, buttonW, buttonH);
+  fill(0);
+  text(s, x + buttonW/2 - textWidth(s)/2, y + buttonH/2 + 10);
+}
+
+void road1() {
+  fill(0);
+  rect(locX, locY, roadWidth, roadHeight);
+  fill(0);
+  rect(locX, locY + 220, roadWidth, roadHeight);
+
+  fill(0);
+  rect(locX, locY + 440, roadWidth, roadHeight);
+}
+
+void road2() {
+
+  rect(locX, locY + 90, roadWidth, roadHeight);
+  rect(locX, locY + 130, roadWidth, roadHeight);
+
+  rect(locX, locY + 310, roadWidth, roadHeight);
+  rect(locX, locY + 350, roadWidth, roadHeight);
+}
+
+class move {
+  float x, y, xspeed;
+
+  move(float xpos, float ypos, float s) {
+    x = xpos;
+    y = ypos;
+    xspeed = s;
+  }
+
+  void gogo() {
+    this.x = this.x + this.xspeed;
+  }
+
+  void backback() {
+    this.x = this.x - this.xspeed;
+  }
+}
+
+class Traffic extends move {
+
+  Traffic(float x, float y, float s) {
+    super(x, y, s);
+  }
+
+  void display() {
+    stroke(3777);
+    fill(0, 0, 255);
+    rect(this.x, this.y, 70, 20);
+
+    rect( this.x, this.y + 350, 70, 20);
+  }
+
+  void drive() {
+    this.gogo();
+
+    if ( this.x > width) {
+      this.x = -70;
+    }
+  }
+}
+
+class traffix extends move {
+
+  traffix(float x, float y, float s) {
+    super(x, y, s);
+  }
+
+  void display() {
+    stroke(3777);
+    fill(255, 0, 0);
+    rect(this.x, this.y, 70, 20);
+    rect( this.x, this.y + 220, 70, 20);
+  }
+
+
+  void drive() {
+
+    this.backback();
+
+    if (this.x + 70 < 0) {
+      this.x = width;
+    }
+  }
+}
+
+class drafic extends move {
+  drafic(float x, float y, float s) {
+    super(x, y, s);
+  }
+
+  void display() {
+    stroke(3777);
+    fill(230, 230, 250);
+    rect(this.x, this.y + 360, 100, 20);
+    rect( this.x, this.y  + 155, 300, 40);
+  }
+
+
+  void drive() {
+
+    this.backback();
+
+    if (this.x + 300 < 0) {
+      this.x  = width;
+    }
+  }
+}
+
+class cross {
+  float px, py, yspeed;
+
+  cross(float xpos, float ypos, float ys) {
+    px = xpos;
+    py = ypos;
+    yspeed = ys;
+  }
+
+  void walking() {
+    this.yspeed = -30;
+    this.py = this.py + this.yspeed;
+  }
+}
+
+class player extends cross {
+
+  player(float px, float py, float yspeed) {
+    super(px, py, yspeed);
+  }
+
+  void display() {
+    fill(255, 235, 205);
+    rect(this.px, this.py, 15, 15);
+  }
+
+  void crossing () {
+    this.walking();
+  }
+
+  void reset() {
+
+    if (this.py < 0) {
+
+      this.py = this. py + 580;
+      println("Reset!");
+    }
+  }
+  void collidetect() {
+  }
+}
+void mousePressed() {
+
+  if (screen == 0) {
+    if (mouseX > button1X && mouseX < button1X + buttonW && mouseY > button1Y && mouseY < button1Y + buttonH) {
+      screen = 1;
+      println("Click!");
+    }
+  }
+}
+
+void keyPressed() {
+
+  if ( key == ' ') {
+
+    play.crossing();
+  }
+}
